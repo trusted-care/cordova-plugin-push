@@ -24,7 +24,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.trusted.care.staging.R
 
 private const val POST_NOTIFICATIONS_REQUEST_CODE = 8234
 
@@ -36,27 +35,30 @@ class IncomingCallActivity : Activity() {
         showWhenLockedAndTurnScreenOn()
         super.onCreate(savedInstanceState)
         Log.d("", "IncomingCallActivity.onCreate()")
-        setContentView(R.layout.activity_incoming_call)
-
+        val activityIncomingCallRes = resources.getIdentifier("activity_incoming_call", "layout", packageName)
+        setContentView(activityIncomingCallRes)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        //window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
-        //window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
-        //window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
-        //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         instance = this
 
+        val tvCallerRes = resources.getIdentifier("tvCaller", "id", packageName)
+        val btnAcceptRes = resources.getIdentifier("btnAccept", "id", packageName)
+        val btnDeclineRes = resources.getIdentifier("btnDecline", "id", packageName)
+        val ivAnimatedCircleRes = resources.getIdentifier("ivAnimatedCircle", "id", packageName)
+        val circleAnimationAvdRes = resources.getIdentifier("circle_animation_avd", "drawable", packageName)
+
         caller = intent?.extras?.getString("caller") ?: ""
-        (findViewById<TextView>(R.id.tvCaller)).text = caller
-        val btnAccept: Button = findViewById(R.id.btnAccept)
-        val btnDecline: Button = findViewById(R.id.btnDecline)
+        (findViewById<TextView>(tvCallerRes)).text = caller
+        val btnAccept: Button = findViewById(btnAcceptRes)
+        val btnDecline: Button = findViewById(btnDeclineRes)
+
         btnAccept.setOnClickListener { v -> requestPhoneUnlock() }
         btnDecline.setOnClickListener { v -> declineIncomingVoIP() }
 
-        val animatedCircle: ImageView = findViewById(R.id.ivAnimatedCircle)
-        val drawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.circle_animation_avd)
+        val animatedCircle: ImageView = findViewById(ivAnimatedCircleRes)
+        val drawableCompat = AnimatedVectorDrawableCompat.create(this, circleAnimationAvdRes)
         animatedCircle.setImageDrawable(drawableCompat)
         drawableCompat?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
             private val fHandler = Handler(Looper.getMainLooper())

@@ -24,7 +24,6 @@ import com.adobe.phonegap.push.PushPlugin.Companion.sendExtras
 import com.adobe.phonegap.push.PushPlugin.Companion.setApplicationIconBadgeNumber
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.trusted.care.staging.R
 import java.security.SecureRandom
 import java.util.*
 
@@ -337,10 +336,10 @@ class FCMService : FirebaseMessagingService() {
             context, 20,
             acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
+        val pushicon = resources.getIdentifier("pushicon", "drawable", packageName)
         val notificationBuilder =
             NotificationCompat.Builder(context, NotificationUtils.CHANNEL_VOIP)
-                .setSmallIcon(R.drawable.pushicon)
+                .setSmallIcon(pushicon)
                 .setContentTitle(title)
                 .setContentText(caller)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
