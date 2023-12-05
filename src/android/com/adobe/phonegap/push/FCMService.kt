@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.*
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +21,7 @@ import android.provider.Settings
 import android.text.Spanned
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.text.HtmlCompat
 import com.adobe.phonegap.push.PushPlugin.Companion.isActive
@@ -24,6 +30,12 @@ import com.adobe.phonegap.push.PushPlugin.Companion.sendExtras
 import com.adobe.phonegap.push.PushPlugin.Companion.setApplicationIconBadgeNumber
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -55,6 +67,12 @@ class FCMService : FirebaseMessagingService() {
     } else {
       0
     }
+
+    // VoIP
+    private const val CHANNEL_VOIP = "Voip"
+    private const val CHANNEL_NAME = "TCVoip"
+    private var voipNotificationActionBR: BroadcastReceiver? = null
+    const val VOIP_NOTIFICATION_ID = 168697
 
     /**
      * Get the Application Name from Label
@@ -141,26 +159,179 @@ class FCMService : FirebaseMessagingService() {
         setApplicationIconBadgeNumber(context, 0)
       }
 
-      // Foreground
-      extras.putBoolean(PushConstants.FOREGROUND, isInForeground)
-
-      // if we are in the foreground and forceShow is `false` only send data
-      val forceShow = pushSharedPref.getBoolean(PushConstants.FORCE_SHOW, false)
-      if (!forceShow && isInForeground) {
-        Log.d(TAG, "Do Not Force & Is In Foreground")
-        extras.putBoolean(PushConstants.COLDSTART, false)
-        sendExtras(extras)
-      } else if (forceShow && isInForeground) {
-        Log.d(TAG, "Force & Is In Foreground")
-        extras.putBoolean(PushConstants.COLDSTART, false)
-        showNotificationIfPossible(extras)
+      if ("true".equals(message.getData().get("voip"))) {
+        if ("true".equals(message.getData().get("isCancelPush"))) {
+          dismissVOIPNotification()
+          IncomingCallActivity.dismissUnlockScreenNotification(this.getApplicationContext())
+        } else {
+          showVOIPNotification(message.getData())
+        }
       } else {
-        Log.d(TAG, "In Background")
-        extras.putBoolean(PushConstants.COLDSTART, isActive)
-        showNotificationIfPossible(extras)
+        // Foreground
+        extras.putBoolean(PushConstants.FOREGROUND, isInForeground)
+
+        // if we are in the foreground and forceShow is `false` only send data
+        val forceShow = pushSharedPref.getBoolean(PushConstants.FORCE_SHOW, false)
+        if (!forceShow && isInForeground) {
+          Log.d(TAG, "Do Not Force & Is In Foreground")
+          extras.putBoolean(PushConstants.COLDSTART, false)
+          sendExtras(extras)
+        } else if (forceShow && isInForeground) {
+          Log.d(TAG, "Force & Is In Foreground")
+          extras.putBoolean(PushConstants.COLDSTART, false)
+          showNotificationIfPossible(extras)
+        } else {
+          Log.d(TAG, "In Background")
+          extras.putBoolean(PushConstants.COLDSTART, isActive)
+          showNotificationIfPossible(extras)
+        }
       }
     }
   }
+
+  // VoIP implementation
+  private fun intentForLaunchActivity(): Intent {
+    val pm: PackageManager = getPackageManager()
+    return pm.getLaunchIntentForPackage(getApplicationContext().getPackageName())
+  }
+
+  private fun defaultRingtoneUri(): Uri {
+    return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+  }
+
+  private fun createNotificationChannel() {
+    // Create the NotificationChannel, but only on API 26+ because
+    // the NotificationChannel class is new and not in the support library
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val importance: Int = NotificationManager.IMPORTANCE_HIGH
+      val channel = NotificationChannel(CHANNEL_VOIP, CHANNEL_NAME, importance)
+      channel.setDescription("Channel For VOIP Calls")
+
+      // Set ringtone to notification (>= Android O)
+      val audioAttributes: AudioAttributes = Builder()
+        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+        .build()
+      channel.setSound(defaultRingtoneUri(), audioAttributes)
+
+      // Register the channel with the system; you can't change the importance
+      // or other notification behaviors after this
+      val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)
+      notificationManager.createNotificationChannel(channel)
+    }
+  }
+
+  private fun showVOIPNotification(messageData: Map<String, String>) {
+    createNotificationChannel()
+
+    // Prepare data from messageData
+    var caller: String? = "Unknown caller"
+    if (messageData.containsKey("caller")) {
+      caller = messageData["caller"]
+    }
+    val callId = messageData["callId"]
+    val callbackUrl = messageData["callbackUrl"]
+
+    // Read the message title from messageData
+    var title: String? = "Eingehender Anruf"
+    if (messageData.containsKey("body")) {
+      title = messageData["body"]
+    }
+
+    // Update Webhook status to CONNECTED
+    updateWebhookVOIPStatus(callbackUrl, callId, IncomingCallActivity.VOIP_CONNECTED)
+
+    // Intent for LockScreen or tapping on notification
+    val fullScreenIntent = Intent(this, IncomingCallActivity::class.java)
+    fullScreenIntent.putExtra("caller", caller)
+    val fullScreenPendingIntent: PendingIntent = PendingIntent.getActivity(this, 0,
+      fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+    // Intent for tapping on Answer
+    val acceptIntent = Intent(IncomingCallActivity.VOIP_ACCEPT)
+    val acceptPendingIntent: PendingIntent = PendingIntent.getBroadcast(this, 10, acceptIntent, PendingIntent.FLAG_IMMUTABLE)
+
+    // Intent for tapping on Reject
+    val declineIntent = Intent(IncomingCallActivity.VOIP_DECLINE)
+    val declinePendingIntent: PendingIntent = PendingIntent.getBroadcast(this, 20, declineIntent, PendingIntent.FLAG_IMMUTABLE)
+    val notificationBuilder: NotificationCompat.Builder = Builder(this, CHANNEL_VOIP)
+      .setSmallIcon(getResources().getIdentifier("pushicon", "drawable", getPackageName()))
+      .setContentTitle(title)
+      .setContentText(caller)
+      .setPriority(NotificationCompat.PRIORITY_HIGH)
+      .setCategory(NotificationCompat.CATEGORY_CALL) // Show main activity on lock screen or when tapping on notification
+      .setFullScreenIntent(fullScreenPendingIntent, true) // Show Accept button
+      .addAction(Action(0, "Annehmen",
+        acceptPendingIntent)) // Show decline action
+      .addAction(Action(0, "Ablehnen",
+        declinePendingIntent)) // Make notification dismiss on user input action
+      .setAutoCancel(true) // Cannot be swiped by user
+      .setOngoing(true) // Set ringtone to notification (< Android O)
+      .setSound(defaultRingtoneUri())
+    val incomingCallNotification: Notification = notificationBuilder.build()
+    val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(this)
+    // Display notification
+    notificationManager.notify(VOIP_NOTIFICATION_ID, incomingCallNotification)
+
+    // Add broadcast receiver for notification button actions
+    if (voipNotificationActionBR == null) {
+      val filter = IntentFilter()
+      filter.addAction(IncomingCallActivity.VOIP_ACCEPT)
+      filter.addAction(IncomingCallActivity.VOIP_DECLINE)
+      val appContext: Context = this.getApplicationContext()
+      voipNotificationActionBR = object : BroadcastReceiver() {
+        @Override
+        fun onReceive(context: Context?, intent: Intent) {
+          // Remove BR after responding to notification action
+          appContext.unregisterReceiver(voipNotificationActionBR)
+          voipNotificationActionBR = null
+
+          // Handle action
+          dismissVOIPNotification()
+
+          // Update Webhook status to CONNECTED
+          val voipStatus: String = intent.getAction()
+          updateWebhookVOIPStatus(callbackUrl, callId, voipStatus)
+
+          // Start cordova activity on answer
+          if (voipStatus.equals(IncomingCallActivity.VOIP_ACCEPT)) {
+            startActivity(intentForLaunchActivity())
+          }
+        }
+      }
+      appContext.registerReceiver(voipNotificationActionBR, filter)
+    }
+  }
+
+  private fun dismissVOIPNotification() {
+    NotificationManagerCompat.from(this).cancel(VOIP_NOTIFICATION_ID)
+    if (IncomingCallActivity.instance != null) {
+      IncomingCallActivity.instance.finish()
+    }
+  }
+
+  fun updateWebhookVOIPStatus(url: String?, callId: String?, status: String) {
+    val client = OkHttpClient()
+    val urlBuilder: HttpUrl.Builder = HttpUrl.parse(url).newBuilder()
+    urlBuilder.addQueryParameter("id", callId)
+    urlBuilder.addQueryParameter("input", status)
+    val urlBuilt: String = urlBuilder.build().toString()
+    val request: Request = Builder().url(urlBuilt).build()
+    client.newCall(request)
+      .enqueue(object : Callback() {
+        @Override
+        fun onFailure(call: Call?, e: IOException?) {
+          Log.d(LOG_TAG, "Update For CallId $callId and Status $status failed")
+        }
+
+        @Override
+        fun onResponse(call: Call?, response: Response?) {
+          Log.d(LOG_TAG, "Update For CallId $callId and Status $status successful")
+        }
+      })
+  }
+
+  // END of VoIP implementation
 
   private fun replaceKey(oldKey: String, newKey: String, extras: Bundle, newExtras: Bundle) {
     /*
@@ -702,7 +873,7 @@ class FCMService : FirebaseMessagingService() {
                   intent,
                   PendingIntent.FLAG_ONE_SHOT or FLAG_MUTABLE
                 )
-              } else {
+              } else if (foreground) {
                 Log.d(TAG, "push receiver for notId $notId")
 
                 PendingIntent.getBroadcast(
@@ -711,6 +882,19 @@ class FCMService : FirebaseMessagingService() {
                   intent,
                   PendingIntent.FLAG_ONE_SHOT or FLAG_MUTABLE
                 )
+              } else {
+                // Only add on platform levels that support FLAG_MUTABLE
+                val flag: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+                if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S &&
+                  Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                  intent = Intent(this, OnNotificationReceiverActivity::class.java)
+                  updateIntent(intent, action.getString(PushConstants.CALLBACK), extras, foreground, notId)
+                  pIntent = PendingIntent.getActivity(this, uniquePendingIntentRequestCode, intent, flag)
+                } else {
+                  intent = Intent(this, BackgroundActionButtonHandler::class.java)
+                  updateIntent(intent, action.getString(PushConstants.CALLBACK), extras, foreground, notId)
+                  pIntent = PendingIntent.getBroadcast(this, uniquePendingIntentRequestCode, intent, flag)
+                }
               }
             }
 

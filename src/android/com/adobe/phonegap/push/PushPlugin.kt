@@ -199,6 +199,9 @@ class PushPlugin : CordovaPlugin() {
         }
     }
 
+    val isInBackground: Boolean
+      get() = !isInForeground
+
     /**
      * @return Boolean Active is true when the Cordova WebView is present.
      */
