@@ -33,11 +33,17 @@
       <uses-permission android:name="android.permission.WAKE_LOCK"/>
       <uses-permission android:name="android.permission.VIBRATE"/>
       <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+      <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+      <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+      <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+      <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
       <uses-permission android:name="${applicationId}.permission.PushHandlerActivity"/>
       <permission android:name="${applicationId}.permission.PushHandlerActivity" android:protectionLevel="signature"></permission>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <activity android:exported="true" android:launchMode="singleTop" android:showOnLockScreen="true" android:name="com.adobe.phonegap.push.IncomingCallActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+      <activity android:exported="true" android:name="com.adobe.phonegap.push.IncomingCallActionHandlerActivity" />
       <activity android:name="com.adobe.phonegap.push.PushHandlerActivity" android:exported="true" android:permission="${applicationId}.permission.PushHandlerActivity"/>
       <activity android:name="com.adobe.phonegap.push.BackgroundHandlerActivity" android:exported="true" android:permission="${applicationId}.permission.BackgroundHandlerActivity">
         <intent-filter>
@@ -87,6 +93,12 @@
     <source-file src="src/android/com/adobe/phonegap/push/PushPlugin.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/BackgroundActionButtonHandler.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushDismissedHandler.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/IncomingCallActionHandlerActivity.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/IncomingCallHelper.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/PushUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/NotificationUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/AndroidUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/StringExtensions.kt" target-dir="java/com/adobe/phonegap/push/"/>
   </platform>
 
   <platform name="browser">
