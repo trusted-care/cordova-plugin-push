@@ -334,7 +334,7 @@ class FCMService : FirebaseMessagingService() {
 
         val declinePendingIntent = PendingIntent.getActivity(
             context, 20,
-            acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            declineIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val pushicon = resources.getIdentifier("pushicon", "drawable", packageName)
         val notificationBuilder =
