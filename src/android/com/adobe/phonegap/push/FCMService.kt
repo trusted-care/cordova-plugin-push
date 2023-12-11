@@ -318,6 +318,7 @@ class FCMService : FirebaseMessagingService() {
 
         // Intent for tapping on Answer
         val acceptIntent = Intent(context, IncomingCallActionHandlerActivity::class.java)
+        acceptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         acceptIntent.putExtra(IncomingCallHelper.EXTRA_BUTTON_ACTION, IncomingCallActivity.VOIP_ACCEPT)
         acceptIntent.putExtra(IncomingCallHelper.EXTRA_CALLBACK_URL, callbackUrl)
         acceptIntent.putExtra(IncomingCallHelper.EXTRA_CALL_ID, callId)
@@ -328,6 +329,7 @@ class FCMService : FirebaseMessagingService() {
 
         // Intent for tapping on Reject
         val declineIntent = Intent(context, IncomingCallActionHandlerActivity::class.java)
+        declineIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         declineIntent.putExtra(IncomingCallHelper.EXTRA_BUTTON_ACTION, IncomingCallActivity.VOIP_DECLINE)
         declineIntent.putExtra(IncomingCallHelper.EXTRA_CALLBACK_URL, callbackUrl)
         declineIntent.putExtra(IncomingCallHelper.EXTRA_CALL_ID, callId)

@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import kotlin.system.exitProcess
 
 object IncomingCallHelper {
 
@@ -61,6 +62,8 @@ object IncomingCallHelper {
         // Start cordova activity on answer
         if (voipStatus == IncomingCallActivity.VOIP_ACCEPT) {
             context.startActivity(AndroidUtils.intentForLaunchActivity(context))
+        } else {
+            exitProcess(0)
         }
     }
 }
