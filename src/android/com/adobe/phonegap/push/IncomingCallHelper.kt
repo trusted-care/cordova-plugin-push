@@ -60,7 +60,9 @@ object IncomingCallHelper {
     private fun checkRedirectIfNext(context: Context, voipStatus: String) {
         // Start cordova activity on answer
         if (voipStatus == IncomingCallActivity.VOIP_ACCEPT) {
-            context.startActivity(intentForLaunchActivity(context))
+          context.startActivity(intentForLaunchActivity(context))
+        } else {
+          exitProcess(0)
         }
     }
 

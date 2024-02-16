@@ -262,21 +262,23 @@ class FCMService : FirebaseMessagingService() {
               PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
       // Intent for tapping on Answer
-      val acceptIntent = Intent(this, IncomingCallActionHandlerActivity::class.java)
+      val acceptIntent = Intent(context, IncomingCallActionHandlerActivity::class.java)
+      acceptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       acceptIntent.putExtra(EXTRA_BUTTON_ACTION, VOIP_ACCEPT)
       acceptIntent.putExtra(EXTRA_CALLBACK_URL, callbackUrl)
       acceptIntent.putExtra(EXTRA_CALL_ID, callId)
+
+      // Intent for tapping on Reject
+      val declineIntent = Intent(context, IncomingCallActionHandlerActivity::class.java)
+      declineIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      declineIntent.putExtra(EXTRA_BUTTON_ACTION, VOIP_DECLINE)
+      declineIntent.putExtra(EXTRA_CALLBACK_URL, callbackUrl)
+      declineIntent.putExtra(EXTRA_CALL_ID, callId)
 
       val acceptPendingIntent = PendingIntent.getActivity(
           this@FCMService, 10,
           acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
-
-      // Intent for tapping on Reject
-      val declineIntent = Intent(this, IncomingCallActionHandlerActivity::class.java)
-      declineIntent.putExtra(EXTRA_BUTTON_ACTION, VOIP_DECLINE)
-      declineIntent.putExtra(EXTRA_CALLBACK_URL, callbackUrl)
-      declineIntent.putExtra(EXTRA_CALL_ID, callId)
 
       val declinePendingIntent = PendingIntent.getActivity(
           this@FCMService, 20,
