@@ -111,6 +111,12 @@ object PushConstants {
     const val MESSAGE_ID: String = "google.message_id"
     const val IS_ENABLED: String = "isEnabled"
 
+    const val NOTIFY_MESSAGE_TYPE_KEY = "messageType"
+    const val NOTIFY_TAP_KEY = "tap"
+    const val NOTIFY_NOTIFICATION_VALUE = "notification"
+    const val NOTIFY_BACKGROUND_VALUE = "background"
+    const val NOTIFY_FOREGROUND_VALUE = "foreground"
+
     const val VOIP_CALL_ID_KEY = "callId"
     const val VOIP_CALLBACK_URL_KEY = "callbackUrl"
     const val VOIP_MESSAGE_BODY_KEY = "body"
