@@ -33,23 +33,36 @@ class IncomingCallActivity : Activity() {
     var caller: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         showWhenLockedAndTurnScreenOn()
-        setContentView(
-            resources.getIdentifier("activity_incoming_call", "layout", packageName)
-        )
+        super.onCreate(savedInstanceState)
 
+        Log.d("", "IncomingCallActivity.onCreate()")
+        val activityIncomingCallRes = resources.getIdentifier("activity_incoming_call", "layout", packageName)
+        setContentView(activityIncomingCallRes)
+        
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+        
         instance = this
+        
+        val tvCallerRes = resources.getIdentifier("tvCaller", "id", packageName)
+        val btnAcceptRes = resources.getIdentifier("btnAccept", "id", packageName)
+        val btnDeclineRes = resources.getIdentifier("btnDecline", "id", packageName)
+        val ivAnimatedCircleRes = resources.getIdentifier("ivAnimatedCircle", "id", packageName)
+        val circleAnimationAvdRes = resources.getIdentifier("circle_animation_avd", "drawable", packageName)
 
         caller = intent?.extras?.getString("caller") ?: ""
-        (findViewById<TextView>(R.id.tvCaller)).text = caller
-        val btnAccept: Button = findViewById(R.id.btnAccept)
-        val btnDecline: Button = findViewById(R.id.btnDecline)
+        (findViewById<TextView>(tvCallerRes)).text = caller
+        val btnAccept: Button = findViewById(btnAcceptRes)
+        val btnDecline: Button = findViewById(btnDeclineRes)
+
         btnAccept.setOnClickListener { v -> requestPhoneUnlock() }
         btnDecline.setOnClickListener { v -> declineIncomingVoIP() }
 
-        val animatedCircle: ImageView = findViewById(R.id.ivAnimatedCircle)
-        val drawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.circle_animation_avd)
+        val animatedCircle: ImageView = findViewById(ivAnimatedCircleRes)
+        val drawableCompat = AnimatedVectorDrawableCompat.create(this, circleAnimationAvdRes)
         animatedCircle.setImageDrawable(drawableCompat)
         drawableCompat?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
             private val fHandler = Handler(Looper.getMainLooper())
@@ -60,14 +73,11 @@ class IncomingCallActivity : Activity() {
                 }
             }
         })
+        
         drawableCompat?.start()
     }
 
     private fun showWhenLockedAndTurnScreenOn() {
-        window.setFlags(
-           WindowManager.LayoutParams.FLAG_FULLSCREEN,
-           WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)

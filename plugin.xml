@@ -77,15 +77,34 @@
     <framework src="androidx.core:core:$ANDROIDX_CORE_VERSION" />
     <framework src="me.leolin:ShortcutBadger:1.1.22@aar"/>
     <framework src="com.google.firebase:firebase-messaging:$FCM_VERSION"/>
-    <!-- Resources -->
+    
+    
+    <!-- Setup view of push Call Screen -->
+    <source-file src="src/android/com/adobe/phonegap/push/IncomingCallActivity.kt" target-dir="java/com/adobe/phonegap/push/"/>
+
+    <resource-file src="src/android/res/values/push_dimens.xml" target="res/values/push_dimens.xml" />
+    <resource-file src="src/android/res/values/push_styles.xml" target="res/values/push_styles.xml" />
+    <resource-file src="src/android/res/drawable/ic_brand_logo.xml" target="res/drawable/ic_brand_logo.xml" />
+
     <resource-file src="src/android/res/layout/activity_incoming_call.xml" target="res/layout/activity_incoming_call.xml" />
     <resource-file src="src/android/res/drawable/circle_animation_avd.xml" target="res/drawable/circle_animation_avd.xml" />
     <resource-file src="src/android/res/drawable/ic_accept.xml" target="res/drawable/ic_accept.xml" />
     <resource-file src="src/android/res/drawable/ic_decline.xml" target="res/drawable/ic_decline.xml" />
-    <resource-file src="src/android/res/drawable/ic_trusted_care_logo_lang.xml" target="res/drawable/ic_trusted_care_logo_lang.xml" />
     <resource-file src="src/android/res/font/nunito_regular.ttf" target="res/font/nunito_regular.ttf" />
+
+    <config-file target="res/values/strings.xml" parent="/*">
+       <string name="incoming_call_title">Eingehender Videoanruf</string>
+       <string name="incoming_call_caller_name_def">Unknown caller</string>
+       <string name="incoming_call_btn_accept">Annehmen</string>
+       <string name="incoming_call_btn_decline">Ablehnen</string>
+    </config-file>
+
+    <config-file target="res/values/colors.xml" parent="/*">
+       <color name="brand_text">#00054b</color>
+    </config-file>
+    
+    <!-- Resources -->
     <source-file src="src/android/com/adobe/phonegap/push/FCMService.kt" target-dir="java/com/adobe/phonegap/push/"/>
-    <source-file src="src/android/com/adobe/phonegap/push/IncomingCallActivity.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/OnNotificationReceiverActivity.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushConstants.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushHandlerActivity.kt" target-dir="java/com/adobe/phonegap/push/"/>
