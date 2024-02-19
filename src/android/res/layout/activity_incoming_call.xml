@@ -11,7 +11,7 @@
         android:layout_width="@dimen/brand_logo_width"
         android:layout_height="1dp"
         android:layout_gravity="center"
-        android:scaleType="fitEnd"
+        android:scaleType="fitCenter"
         android:layout_weight="1"
         android:src="@drawable/ic_brand_logo" />
 
