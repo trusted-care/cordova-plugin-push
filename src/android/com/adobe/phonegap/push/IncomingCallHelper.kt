@@ -2,6 +2,8 @@ package com.adobe.phonegap.push
 
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import okhttp3.Call
@@ -14,10 +16,6 @@ import java.io.IOException
 import kotlin.system.exitProcess
 
 object IncomingCallHelper {
-
-    const val EXTRA_BUTTON_ACTION = "extra_button_action"
-    const val EXTRA_CALLBACK_URL = "extra_callback_url"
-    const val EXTRA_CALL_ID = "extra_call_id"
 
     fun updateWebhookVOIPStatus(url: String?, callId: String?, status: String, callback: ((Boolean) -> Unit)? = null) {
 
@@ -46,8 +44,8 @@ object IncomingCallHelper {
     }
 
     fun handleActionCall(context: Context, intent: Intent, voipStatus: String) {
-        val callbackUrl = intent.getStringExtra(EXTRA_CALLBACK_URL)
-        val callId = intent.getStringExtra(EXTRA_CALL_ID)
+        val callbackUrl = intent.getStringExtra(PushConstants.VOIP_EXTRA_CALLBACK_URL)
+        val callId = intent.getStringExtra(PushConstants.VOIP_EXTRA_CALL_ID)
 
         // Handle actiontest
         dismissVOIPNotification(context)
@@ -60,17 +58,20 @@ object IncomingCallHelper {
 
     private fun checkRedirectIfNext(context: Context, voipStatus: String) {
         // Start cordova activity on answer
-        if (voipStatus == IncomingCallActivity.VOIP_ACCEPT) {
+        if (voipStatus == PushConstants.VOIP_ACCEPT_KEY) {
           context.startActivity(intentForLaunchActivity(context))
         } else {
           exitProcess(0)
         }
     }
 
-    // VoIP implementation
-    private fun intentForLaunchActivity(context: Context): Intent? {
+    fun intentForLaunchActivity(context: Context): Intent? {
         val pm = context.packageManager
         val packageName = context.packageName
         return pm?.getLaunchIntentForPackage(packageName)
+    }
+
+    fun defaultRingtoneUri(): Uri {
+        return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
     }
 }

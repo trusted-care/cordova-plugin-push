@@ -24,9 +24,19 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.trusted.care.staging.R
 
 private const val POST_NOTIFICATIONS_REQUEST_CODE = 8234
+
+private const val RES_TYPE_ID = "id"
+private const val RES_TYPE_DRAWABLE = "drawable"
+private const val RES_TYPE_LAYOUT = "layout"
+
+private const val RES_LAYOUT_ACTIVITY_INCOMING_CALL = "activity_incoming_call"
+private const val RES_TV_CALLER = "tvCaller"
+private const val RES_BTN_ACCEPT = "btnAccept"
+private const val RES_BTN_DECLINE = "btnDecline"
+private const val RES_ANIMATED_CIRCLE = "ivAnimatedCircle"
+private const val RES_CIRCLE_ANIMATION_AVD = "circle_animation_avd"
 
 class IncomingCallActivity : Activity() {
 
@@ -37,21 +47,21 @@ class IncomingCallActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         Log.d("", "IncomingCallActivity.onCreate()")
-        val activityIncomingCallRes = resources.getIdentifier("activity_incoming_call", "layout", packageName)
+        val activityIncomingCallRes = getResId(RES_LAYOUT_ACTIVITY_INCOMING_CALL, RES_TYPE_LAYOUT)
         setContentView(activityIncomingCallRes)
-        
+
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        
+
         instance = this
-        
-        val tvCallerRes = resources.getIdentifier("tvCaller", "id", packageName)
-        val btnAcceptRes = resources.getIdentifier("btnAccept", "id", packageName)
-        val btnDeclineRes = resources.getIdentifier("btnDecline", "id", packageName)
-        val ivAnimatedCircleRes = resources.getIdentifier("ivAnimatedCircle", "id", packageName)
-        val circleAnimationAvdRes = resources.getIdentifier("circle_animation_avd", "drawable", packageName)
+
+        val tvCallerRes = getResId(RES_TV_CALLER, RES_TYPE_ID)
+        val btnAcceptRes = getResId(RES_BTN_ACCEPT, RES_TYPE_ID)
+        val btnDeclineRes = getResId(RES_BTN_DECLINE, RES_TYPE_ID)
+        val ivAnimatedCircleRes = getResId(RES_ANIMATED_CIRCLE, RES_TYPE_ID)
+        val circleAnimationAvdRes = getResId(RES_CIRCLE_ANIMATION_AVD, RES_TYPE_DRAWABLE)
 
         caller = intent?.extras?.getString("caller") ?: ""
         (findViewById<TextView>(tvCallerRes)).text = caller
@@ -73,8 +83,12 @@ class IncomingCallActivity : Activity() {
                 }
             }
         })
-        
+
         drawableCompat?.start()
+    }
+
+    private fun getResId(name: String, type: String): Int {
+        return resources.getIdentifier(name, type, packageName)
     }
 
     private fun showWhenLockedAndTurnScreenOn() {
@@ -135,12 +149,12 @@ class IncomingCallActivity : Activity() {
 
     fun acceptIncomingVoIP() {
         Log.d("IC", "acceptIncomingVoIP")
-        IncomingCallHelper.handleActionCall(applicationContext, intent, VOIP_ACCEPT)
+        IncomingCallHelper.handleActionCall(applicationContext, intent, PushConstants.VOIP_ACCEPT_KEY)
     }
 
     private fun declineIncomingVoIP() {
         Log.d("IC", "declineIncomingVoIP")
-        IncomingCallHelper.handleActionCall(applicationContext, intent, VOIP_DECLINE)
+        IncomingCallHelper.handleActionCall(applicationContext, intent, PushConstants.VOIP_DECLINE_KEY)
     }
 
     @SuppressLint("MissingPermission")
@@ -208,9 +222,6 @@ class IncomingCallActivity : Activity() {
 
     companion object {
 
-        const val VOIP_CONNECTED = "connected"
-        const val VOIP_ACCEPT = "pickup"
-        const val VOIP_DECLINE = "declined_callee"
         private const val NOTIFICATION_MESSAGE_ID = 1337
 
         var instance: IncomingCallActivity? = null

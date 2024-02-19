@@ -25,7 +25,7 @@ class IncomingCallActionHandlerActivity : Activity() {
     private const val LOG_TAG = "Push_IncomingCallActionHandlerActivity"
 
     private fun handleNotification(context: Context, intent: Intent) {
-        val voipStatus = intent.getStringExtra(IncomingCallHelper.EXTRA_BUTTON_ACTION) ?: return
+        val voipStatus = intent.getStringExtra(PushConstants.VOIP_EXTRA_BUTTON_ACTION) ?: return
         IncomingCallHelper.handleActionCall(context, intent, voipStatus)
     }
   }
