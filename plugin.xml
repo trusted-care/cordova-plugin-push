@@ -95,6 +95,7 @@
     <config-file target="res/values/strings.xml" parent="/*">
        <string name="incoming_call_title">Incoming video call</string>
        <string name="incoming_call_caller_name_def">Unknown caller</string>
+       <string name="voip_call_channel_description">Channel For VOIP Calls</string>
        <string name="incoming_call_btn_accept">Accept</string>
        <string name="incoming_call_btn_decline">Reject</string>
     </config-file>
