@@ -10,12 +10,10 @@ import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.media.AudioAttributes
-import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -34,7 +32,6 @@ import com.adobe.phonegap.push.PushPlugin.Companion.sendExtras
 import com.adobe.phonegap.push.PushPlugin.Companion.setApplicationIconBadgeNumber
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.trusted.care.staging.R
 
 import org.json.JSONArray
 import org.json.JSONException
@@ -198,7 +195,9 @@ class FCMService : FirebaseMessagingService() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val importance: Int = NotificationManager.IMPORTANCE_HIGH
       val channel = NotificationChannel(CHANNEL_VOIP, CHANNEL_NAME, importance)
-        channel.description = getString(R.string.voip_call_channel_description)
+        val voipCallChannelDescriptionRes = ResourcesMapper.getString(applicationContext,
+            ResourcesKeys.RES_STR_VOIP_CALL_CHANNEL_DESCRIPTION)
+        channel.description = getString(voipCallChannelDescriptionRes)
 
       // Set ringtone to notification (>= Android O)
       val audioAttributes = AudioAttributes.Builder()
@@ -216,9 +215,17 @@ class FCMService : FirebaseMessagingService() {
 
   private fun showVOIPNotification(messageData: Map<String, String>) {
       createNotificationChannel()
+      val incomingCallCallerNameDefRes = ResourcesMapper.getString(applicationContext,
+          ResourcesKeys.RES_STR_INCOMING_CALL_CALLER_NAME_DEF)
+      val incomingCallTitleRes = ResourcesMapper.getString(applicationContext,
+          ResourcesKeys.RES_STR_INCOMING_CALL_TITLE)
+      val incomingCallBtnAcceptRes = ResourcesMapper.getString(applicationContext,
+          ResourcesKeys.RES_STR_INCOMING_CALL_BTN_ACCEPT)
+      val incomingCallBtnDeclineRes = ResourcesMapper.getString(applicationContext,
+          ResourcesKeys.RES_STR_INCOMING_CALL_BTN_DECLINE)
 
       // Prepare data from messageData
-      var caller: String? = getString(R.string.incoming_call_caller_name_def)
+      var caller: String? = getString(incomingCallCallerNameDefRes)
       if (messageData.containsKey(PushConstants.VOIP_CALLER_NAME_KEY)) {
           caller = messageData[PushConstants.VOIP_CALLER_NAME_KEY]
       }
@@ -227,7 +234,7 @@ class FCMService : FirebaseMessagingService() {
       val callbackUrl = messageData[PushConstants.VOIP_CALLBACK_URL_KEY]
 
       // Read the message title from messageData
-      var title: String? = getString(R.string.incoming_call_title)
+      var title: String? = getString(incomingCallTitleRes)
       if (messageData.containsKey(PushConstants.VOIP_MESSAGE_BODY_KEY)) {
           title = messageData[PushConstants.VOIP_MESSAGE_BODY_KEY]
       }
@@ -267,9 +274,10 @@ class FCMService : FirebaseMessagingService() {
           this@FCMService, 20,
           acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
-
+      val pushiconRes = ResourcesMapper.getDrawable(applicationContext,
+          ResourcesKeys.RES_DRAWABLE_PUSHICON)
       val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_VOIP)
-          .setSmallIcon(R.drawable.pushicon)
+          .setSmallIcon(pushiconRes)
           .setContentTitle(title)
           .setContentText(caller)
           .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -278,14 +286,14 @@ class FCMService : FirebaseMessagingService() {
           .addAction( // Show Accept button
               NotificationCompat.Action(
                   0,
-                  getString(R.string.incoming_call_btn_accept),
+                  getString(incomingCallBtnAcceptRes),
                   acceptPendingIntent
               )
           )
           .addAction(// Show decline action
               NotificationCompat.Action(
                   0,
-                  getString(R.string.incoming_call_btn_decline),
+                  getString(incomingCallBtnDeclineRes),
                   declinePendingIntent
               )
           ) // Make notification dismiss on user input action

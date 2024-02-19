@@ -27,17 +27,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 private const val POST_NOTIFICATIONS_REQUEST_CODE = 8234
 
-private const val RES_TYPE_ID = "id"
-private const val RES_TYPE_DRAWABLE = "drawable"
-private const val RES_TYPE_LAYOUT = "layout"
-
-private const val RES_LAYOUT_ACTIVITY_INCOMING_CALL = "activity_incoming_call"
-private const val RES_TV_CALLER = "tvCaller"
-private const val RES_BTN_ACCEPT = "btnAccept"
-private const val RES_BTN_DECLINE = "btnDecline"
-private const val RES_ANIMATED_CIRCLE = "ivAnimatedCircle"
-private const val RES_CIRCLE_ANIMATION_AVD = "circle_animation_avd"
-
 class IncomingCallActivity : Activity() {
 
     var caller: String = ""
@@ -47,7 +36,7 @@ class IncomingCallActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         Log.d("", "IncomingCallActivity.onCreate()")
-        val activityIncomingCallRes = getResId(RES_LAYOUT_ACTIVITY_INCOMING_CALL, RES_TYPE_LAYOUT)
+        val activityIncomingCallRes = ResourcesMapper.getLayout(applicationContext, ResourcesKeys.RES_LAYOUT_ACTIVITY_INCOMING_CALL)
         setContentView(activityIncomingCallRes)
 
         window.setFlags(
@@ -57,13 +46,13 @@ class IncomingCallActivity : Activity() {
 
         instance = this
 
-        val tvCallerRes = getResId(RES_TV_CALLER, RES_TYPE_ID)
-        val btnAcceptRes = getResId(RES_BTN_ACCEPT, RES_TYPE_ID)
-        val btnDeclineRes = getResId(RES_BTN_DECLINE, RES_TYPE_ID)
-        val ivAnimatedCircleRes = getResId(RES_ANIMATED_CIRCLE, RES_TYPE_ID)
-        val circleAnimationAvdRes = getResId(RES_CIRCLE_ANIMATION_AVD, RES_TYPE_DRAWABLE)
+        val tvCallerRes = ResourcesMapper.getId(applicationContext, ResourcesKeys.RES_TV_CALLER)
+        val btnAcceptRes = ResourcesMapper.getId(applicationContext,  ResourcesKeys.RES_BTN_ACCEPT)
+        val btnDeclineRes = ResourcesMapper.getId(applicationContext,  ResourcesKeys.RES_BTN_DECLINE)
+        val ivAnimatedCircleRes = ResourcesMapper.getId(applicationContext,  ResourcesKeys.RES_ANIMATED_CIRCLE)
+        val circleAnimationAvdRes = ResourcesMapper.getDrawable(applicationContext,  ResourcesKeys.RES_CIRCLE_ANIMATION_AVD)
 
-        caller = intent?.extras?.getString("caller") ?: ""
+        caller = intent?.extras?.getString(PushConstants.VOIP_CALLER_NAME_KEY) ?: ""
         (findViewById<TextView>(tvCallerRes)).text = caller
         val btnAccept: Button = findViewById(btnAcceptRes)
         val btnDecline: Button = findViewById(btnDeclineRes)
@@ -85,10 +74,6 @@ class IncomingCallActivity : Activity() {
         })
 
         drawableCompat?.start()
-    }
-
-    private fun getResId(name: String, type: String): Int {
-        return resources.getIdentifier(name, type, packageName)
     }
 
     private fun showWhenLockedAndTurnScreenOn() {
@@ -159,10 +144,21 @@ class IncomingCallActivity : Activity() {
 
     @SuppressLint("MissingPermission")
     private fun showUnlockScreenNotification() {
+        val pushiconRes = ResourcesMapper.getDrawable(applicationContext,
+            ResourcesKeys.RES_DRAWABLE_PUSHICON)
+
+        val unlockDeviceTextRes = ResourcesMapper.getString(applicationContext,
+            ResourcesKeys.RES_STR_INCOMING_CALL_UNLOCK_DEVICE_TEXT)
+        val ongoingCallTitleRes = ResourcesMapper.getString(applicationContext,
+            ResourcesKeys.RES_STR_INCOMING_CALL_ONGOING_CALL_TITLE)
+
+        val ongoingCallTitle = getString(ongoingCallTitleRes)
+        val unlockDeviceText = getString(unlockDeviceTextRes)
+
         val notificationBuilder = NotificationCompat.Builder(this, PushConstants.DEFAULT_CHANNEL_ID)
-            .setSmallIcon(resources.getIdentifier("pushicon", "drawable", packageName))
-            .setContentTitle("Ongoing call with $caller")
-            .setContentText("Please unlock your device to continue")
+            .setSmallIcon(pushiconRes)
+            .setContentTitle("$ongoingCallTitle $caller")
+            .setContentText(unlockDeviceText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setAutoCancel(false)
