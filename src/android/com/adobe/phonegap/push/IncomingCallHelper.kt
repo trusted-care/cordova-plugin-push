@@ -59,7 +59,10 @@ object IncomingCallHelper {
 
         // Handle actiontest
         dismissVOIPNotification(context)
-
+        if (voipStatus == PushConstants.VOIP_ACCEPT_KEY) {
+            finishCallScreen()
+        }
+        
         // Update Webhook status to CONNECTED
         updateWebhookVOIPStatus(callbackUrl, callId, voipStatus) { result ->
             if (result) { checkRedirectIfNext(context, voipStatus) }
