@@ -40,9 +40,17 @@ object IncomingCallHelper {
             })
     }
 
+    fun finishApp() {
+        IncomingCallActivity.instance?.get()?.finishAndRemoveTask()
+    }
+
+    fun finishCallScreen() {
+        IncomingCallActivity.instance?.get()?.finish()
+    }
+
     fun dismissVOIPNotification(context: Context) {
         NotificationManagerCompat.from(context).cancel(FCMService.VOIP_NOTIFICATION_ID)
-        IncomingCallActivity.instance?.finish()
+        //finishCallScreen()
     }
 
     fun handleActionCall(context: Context, intent: Intent, voipStatus: String) {
@@ -63,11 +71,10 @@ object IncomingCallHelper {
         if (voipStatus == IncomingCallActivity.VOIP_ACCEPT) {
           context.startActivity(intentForLaunchActivity(context))
         } else {
-          exitProcess(0)
+            finishApp()
         }
     }
 
-    // VoIP implementation
     private fun intentForLaunchActivity(context: Context): Intent? {
         val pm = context.packageManager
         val packageName = context.packageName

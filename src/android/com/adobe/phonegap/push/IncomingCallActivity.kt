@@ -25,12 +25,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.trusted.care.staging.R
+import java.lang.ref.WeakReference
 
 private const val POST_NOTIFICATIONS_REQUEST_CODE = 8234
 
 class IncomingCallActivity : Activity() {
-
-    var caller: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +38,7 @@ class IncomingCallActivity : Activity() {
             resources.getIdentifier("activity_incoming_call", "layout", packageName)
         )
 
-        instance = this
+        instance = WeakReference(this)
 
         caller = intent?.extras?.getString("caller") ?: ""
         (findViewById<TextView>(R.id.tvCaller)).text = caller
@@ -185,7 +184,7 @@ class IncomingCallActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        instance = null
+        instance?.clear()
     }
 
     class PhoneUnlockBroadcastReceiver : BroadcastReceiver() {
@@ -203,7 +202,9 @@ class IncomingCallActivity : Activity() {
         const val VOIP_DECLINE = "declined_callee"
         private const val NOTIFICATION_MESSAGE_ID = 1337
 
-        var instance: IncomingCallActivity? = null
+        var instance: WeakReference<IncomingCallActivity>? = null
+
+        var caller: String = ""
 
         var phoneUnlockBR: PhoneUnlockBroadcastReceiver? = null
         fun dismissUnlockScreenNotification(applicationContext: Context) {
