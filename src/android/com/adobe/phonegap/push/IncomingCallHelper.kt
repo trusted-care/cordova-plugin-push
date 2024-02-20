@@ -38,9 +38,17 @@ object IncomingCallHelper {
             })
     }
 
+    fun finishApp() {
+        IncomingCallActivity.instance?.get()?.finishAndRemoveTask()
+    }
+
+    fun finishCallScreen() {
+        IncomingCallActivity.instance?.get()?.finish()
+    }
+
     fun dismissVOIPNotification(context: Context) {
         NotificationManagerCompat.from(context).cancel(FCMService.VOIP_NOTIFICATION_ID)
-        IncomingCallActivity.instance?.finish()
+        //finishCallScreen()
     }
 
     fun handleActionCall(context: Context, intent: Intent, voipStatus: String) {
@@ -49,6 +57,9 @@ object IncomingCallHelper {
 
         // Handle actiontest
         dismissVOIPNotification(context)
+        if (voipStatus == PushConstants.VOIP_ACCEPT_KEY) {
+            finishCallScreen()
+        }
 
         // Update Webhook status to CONNECTED
         updateWebhookVOIPStatus(callbackUrl, callId, voipStatus) { result ->
@@ -61,7 +72,7 @@ object IncomingCallHelper {
         if (voipStatus == PushConstants.VOIP_ACCEPT_KEY) {
           context.startActivity(intentForLaunchActivity(context))
         } else {
-          exitProcess(0)
+          finishApp()
         }
     }
 

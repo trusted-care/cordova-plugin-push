@@ -24,12 +24,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import java.lang.ref.WeakReference
 
 private const val POST_NOTIFICATIONS_REQUEST_CODE = 8234
 
 class IncomingCallActivity : Activity() {
-
-    var caller: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         showWhenLockedAndTurnScreenOn()
@@ -44,7 +43,7 @@ class IncomingCallActivity : Activity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        instance = this
+        instance = WeakReference(this)
 
         val tvCallerRes = ResourcesMapper.getId(applicationContext, ResourcesKeys.RES_TV_CALLER)
         val btnAcceptRes = ResourcesMapper.getId(applicationContext,  ResourcesKeys.RES_BTN_ACCEPT)
@@ -205,7 +204,7 @@ class IncomingCallActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        instance = null
+        instance?.clear()
     }
 
     class PhoneUnlockBroadcastReceiver : BroadcastReceiver() {
@@ -220,7 +219,9 @@ class IncomingCallActivity : Activity() {
 
         private const val NOTIFICATION_MESSAGE_ID = 1337
 
-        var instance: IncomingCallActivity? = null
+        var instance: WeakReference<IncomingCallActivity>? = null
+
+        var caller: String = ""
 
         var phoneUnlockBR: PhoneUnlockBroadcastReceiver? = null
         fun dismissUnlockScreenNotification(applicationContext: Context) {
