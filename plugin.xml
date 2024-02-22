@@ -77,6 +77,11 @@
     <source-file src="src/android/com/adobe/phonegap/push/PushPlugin.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/BackgroundActionButtonHandler.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushDismissedHandler.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/PushUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/NotificationUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/MessagesStore.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/AndroidUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/StringExtensions.kt" target-dir="java/com/adobe/phonegap/push/"/>
   </platform>
 
   <platform name="browser">
