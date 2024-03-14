@@ -46,9 +46,11 @@ object IncomingCallHelper {
         IncomingCallActivity.instance?.get()?.finish()
     }
 
-    fun dismissVOIPNotification(context: Context) {
+    fun dismissVOIPNotification(context: Context, finishCallScreen: Boolean = false) {
         NotificationManagerCompat.from(context).cancel(FCMService.VOIP_NOTIFICATION_ID)
-        //finishCallScreen()
+        if (finishCallScreen) {
+            finishCallScreen()
+        }
     }
 
     fun handleActionCall(context: Context, intent: Intent, voipStatus: String) {

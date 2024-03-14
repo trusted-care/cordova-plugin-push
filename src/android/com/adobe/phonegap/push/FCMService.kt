@@ -159,7 +159,7 @@ class FCMService : FirebaseMessagingService() {
       // Detect if push message is VOIP call message
       if ("true" == message.data[PushConstants.VOIP_CALL_KEY]) { // if this flag is true, then process as VOIP call event
         if ("true" == message.data[PushConstants.VOIP_IS_CANCEL_PUSH_KEY]) { // if true, then this is cancel VOIP call event
-          IncomingCallHelper.dismissVOIPNotification(context)
+          IncomingCallHelper.dismissVOIPNotification(context, true)
           IncomingCallActivity.dismissUnlockScreenNotification(this.applicationContext)
         } else { // else start VOIP call, show incoming call screen
           showVOIPNotification(message.data)
@@ -272,7 +272,7 @@ class FCMService : FirebaseMessagingService() {
 
       val declinePendingIntent = PendingIntent.getActivity(
           this@FCMService, 20,
-          acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+          declineIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
       val pushiconRes = ResourcesMapper.getDrawable(applicationContext,
           ResourcesKeys.RES_DRAWABLE_PUSHICON)
