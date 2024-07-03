@@ -276,6 +276,10 @@ class FCMService : FirebaseMessagingService() {
       )
       val pushiconRes = ResourcesMapper.getDrawable(applicationContext,
           ResourcesKeys.RES_DRAWABLE_PUSHICON)
+
+      val acceptColor = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_ACCEPT_BTN)
+      val declineColor = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_DECLINE_BTN)
+
       val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_VOIP)
           .setSmallIcon(pushiconRes)
           .setContentTitle(title)
@@ -283,23 +287,25 @@ class FCMService : FirebaseMessagingService() {
           .setPriority(NotificationCompat.PRIORITY_HIGH)
           .setCategory(NotificationCompat.CATEGORY_CALL) // Show main activity on lock screen or when tapping on notification
           .setFullScreenIntent(fullScreenPendingIntent, true)
-          .addAction( // Show Accept button
-              NotificationCompat.Action(
-                  0,
-                  getString(incomingCallBtnAcceptRes),
-                  acceptPendingIntent
-              )
-          )
           .addAction(// Show decline action
               NotificationCompat.Action(
                   0,
-                  getString(incomingCallBtnDeclineRes),
+                  ResourcesMapper.getActionText(applicationContext, incomingCallBtnDeclineRes, declineColor),
                   declinePendingIntent
               )
-          ) // Make notification dismiss on user input action
+          )
+          .addAction( // Show Accept button
+              NotificationCompat.Action(
+                  0,
+                  ResourcesMapper.getActionText(applicationContext, incomingCallBtnAcceptRes, acceptColor),
+                  acceptPendingIntent
+              )
+          )
+          // Make notification dismiss on user input action
           .setAutoCancel(true) // Cannot be swiped by user
           .setOngoing(true) // Set ringtone to notification (< Android O)
           .setSound(IncomingCallHelper.defaultRingtoneUri())
+
       val incomingCallNotification: Notification = notificationBuilder.build()
       val notificationManager = NotificationManagerCompat.from(this)
 

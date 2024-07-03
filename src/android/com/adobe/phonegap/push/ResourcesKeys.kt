@@ -11,6 +11,7 @@ object ResourcesKeys {
     const val RES_TYPE_DRAWABLE = "drawable"
     const val RES_TYPE_LAYOUT = "layout"
     const val RES_TYPE_STRING = "string"
+    const val RES_TYPE_COLOR = "color"
 
     // IncomingCallActivity resources names
     const val RES_LAYOUT_ACTIVITY_INCOMING_CALL = "activity_incoming_call"
@@ -29,4 +30,6 @@ object ResourcesKeys {
     const val RES_STR_INCOMING_CALL_BTN_DECLINE = "incoming_call_btn_decline"
     const val RES_STR_INCOMING_CALL_ONGOING_CALL_TITLE = "incoming_call_ongoing_call_title"
     const val RES_STR_INCOMING_CALL_UNLOCK_DEVICE_TEXT = "incoming_call_unlock_device_text"
+    const val RES_COLOR_ACCEPT_BTN = "accept_btn_color"
+    const val RES_COLOR_DECLINE_BTN = "decline_btn_color"
 }
