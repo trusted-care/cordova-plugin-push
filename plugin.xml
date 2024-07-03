@@ -83,6 +83,7 @@
     <resource-file src="src/android/res/values/push_dimens.xml" target="res/values/push_dimens.xml" />
     <resource-file src="src/android/res/values/push_styles.xml" target="res/values/push_styles.xml" />
     <resource-file src="src/android/res/values/push_strings.xml" target="res/values/push_strings.xml" />
+    <resource-file src="src/android/res/values/push_colors.xml" target="res/values/push_colors.xml" />
     <resource-file src="src/android/res/drawable/ic_brand_logo.xml" target="res/drawable/ic_brand_logo.xml" />
 
     <resource-file src="src/android/res/layout/activity_incoming_call.xml" target="res/layout/activity_incoming_call.xml" />
