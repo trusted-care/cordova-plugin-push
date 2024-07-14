@@ -309,6 +309,8 @@ class FCMService : FirebaseMessagingService() {
       val incomingCallNotification: Notification = notificationBuilder.build()
       val notificationManager = NotificationManagerCompat.from(this)
 
+      incomingCallNotification.flags = incomingCallNotification.flags or Notification.FLAG_INSISTENT
+
       // Display notification
       if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
           != PackageManager.PERMISSION_GRANTED
