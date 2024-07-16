@@ -18,6 +18,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.adobe.phonegap.push.PushConstants.VOIP_NOTIFICATION_ID
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.messaging.FirebaseMessaging
 import me.leolin.shortcutbadger.ShortcutBadger
@@ -836,6 +837,17 @@ class PushPlugin : CordovaPlugin() {
     override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
         super.initialize(cordova, webView)
         isInForeground = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        clearAllNotificationsAsync()
+    }
+
+    private fun clearAllNotificationsAsync() {
+        cordova.threadPool.execute {
+            clearAllNotifications()
+        }
     }
 
     /**

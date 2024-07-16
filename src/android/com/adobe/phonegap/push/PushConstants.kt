@@ -117,6 +117,8 @@ object PushConstants {
     const val NOTIFY_BACKGROUND_VALUE = "background"
     const val NOTIFY_FOREGROUND_VALUE = "foreground"
 
+    const val VOIP_NOTIFICATION_ID = 168697
+
     const val VOIP_CALL_ID_KEY = "callId"
     const val VOIP_CALLBACK_URL_KEY = "callbackUrl"
     const val VOIP_MESSAGE_BODY_KEY = "body"

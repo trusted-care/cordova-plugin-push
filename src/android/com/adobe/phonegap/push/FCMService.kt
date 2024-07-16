@@ -26,6 +26,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.app.TaskStackBuilder
 import androidx.core.text.HtmlCompat
+import com.adobe.phonegap.push.PushConstants.VOIP_NOTIFICATION_ID
 import com.adobe.phonegap.push.PushPlugin.Companion.isActive
 import com.adobe.phonegap.push.PushPlugin.Companion.isInForeground
 import com.adobe.phonegap.push.PushPlugin.Companion.sendExtras
@@ -69,7 +70,6 @@ class FCMService : FirebaseMessagingService() {
     private const val CHANNEL_VOIP = "Voip"
     private const val CHANNEL_NAME = "TCVoip"
     private var voipNotificationActionBR: BroadcastReceiver? = null
-    const val VOIP_NOTIFICATION_ID = 168697
 
     /**
      * Get the Application Name from Label

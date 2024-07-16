@@ -6,6 +6,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
+import com.adobe.phonegap.push.PushConstants.VOIP_NOTIFICATION_ID
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
@@ -47,7 +48,7 @@ object IncomingCallHelper {
     }
 
     fun dismissVOIPNotification(context: Context, finishCallScreen: Boolean = false) {
-        NotificationManagerCompat.from(context).cancel(FCMService.VOIP_NOTIFICATION_ID)
+        NotificationManagerCompat.from(context).cancel(VOIP_NOTIFICATION_ID)
         if (finishCallScreen) {
             finishCallScreen()
         }
