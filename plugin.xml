@@ -110,6 +110,7 @@
     <source-file src="src/android/com/adobe/phonegap/push/IncomingCallHelper.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/ResourcesMapper.kt" target-dir="java/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/ResourcesKeys.kt" target-dir="java/com/adobe/phonegap/push/"/>
+    <source-file src="src/android/com/adobe/phonegap/push/UiUtils.kt" target-dir="java/com/adobe/phonegap/push/"/>
   </platform>
 
   <platform name="browser">

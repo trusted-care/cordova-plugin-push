@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import java.lang.ref.WeakReference
@@ -53,8 +54,11 @@ class IncomingCallActivity : Activity() {
 
         caller = intent?.extras?.getString(PushConstants.VOIP_CALLER_NAME_KEY) ?: ""
         (findViewById<TextView>(tvCallerRes)).text = caller
+
         val btnAccept: Button = findViewById(btnAcceptRes)
         val btnDecline: Button = findViewById(btnDeclineRes)
+
+        setCallButtonsCustomColor(btnAccept, btnDecline)
 
         btnAccept.setOnClickListener { v -> requestPhoneUnlock() }
         btnDecline.setOnClickListener { v -> declineIncomingVoIP() }
@@ -73,6 +77,26 @@ class IncomingCallActivity : Activity() {
         })
 
         drawableCompat?.start()
+    }
+
+    private fun setCallButtonsCustomColor(btnAccept: Button, btnDecline: Button) {
+        val acceptColorRes = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_ACCEPT_BTN)
+        val declineColorRes = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_DECLINE_BTN)
+        val acceptColor = ContextCompat.getColor(applicationContext, acceptColorRes)
+        val declineColor = ContextCompat.getColor(applicationContext, declineColorRes)
+
+        val btnAcceptDrawable = btnAccept.compoundDrawables[1]
+        val btnDeclineDrawable = btnDecline.compoundDrawables[1]
+
+        val btnAcceptDrawable1 = UiUtils.getTintDrawable(btnAcceptDrawable, acceptColor)
+        val btnDeclineDrawable1 = UiUtils.getTintDrawable(btnDeclineDrawable, declineColor)
+
+        if (btnAcceptDrawable1 != null) {
+            btnAccept.setCompoundDrawablesRelative(null, btnAcceptDrawable1, null, null)
+        }
+        if (btnDeclineDrawable1 != null) {
+            btnDecline.setCompoundDrawablesRelative(null, btnDeclineDrawable1, null, null)
+        }
     }
 
     private fun showWhenLockedAndTurnScreenOn() {

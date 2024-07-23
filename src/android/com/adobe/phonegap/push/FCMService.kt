@@ -25,6 +25,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.app.TaskStackBuilder
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.adobe.phonegap.push.PushConstants.VOIP_NOTIFICATION_ID
 import com.adobe.phonegap.push.PushPlugin.Companion.isActive
@@ -224,6 +225,11 @@ class FCMService : FirebaseMessagingService() {
       val incomingCallBtnDeclineRes = ResourcesMapper.getString(applicationContext,
           ResourcesKeys.RES_STR_INCOMING_CALL_BTN_DECLINE)
 
+      val pushIconColorRes = ResourcesMapper.getColor(applicationContext,
+          ResourcesKeys.RES_COLOR_PUSH_ICON)
+      val pushIconRes = ResourcesMapper.getDrawable(applicationContext,
+          ResourcesKeys.RES_DRAWABLE_PUSHICON)
+
       // Prepare data from messageData
       var caller: String? = getString(incomingCallCallerNameDefRes)
       if (messageData.containsKey(PushConstants.VOIP_CALLER_NAME_KEY)) {
@@ -274,16 +280,15 @@ class FCMService : FirebaseMessagingService() {
           this@FCMService, 20,
           declineIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
-      val pushiconRes = ResourcesMapper.getDrawable(applicationContext,
-          ResourcesKeys.RES_DRAWABLE_PUSHICON)
 
       val acceptColor = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_ACCEPT_BTN)
       val declineColor = ResourcesMapper.getColor(applicationContext, ResourcesKeys.RES_COLOR_DECLINE_BTN)
 
       val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_VOIP)
-          .setSmallIcon(pushiconRes)
+          .setSmallIcon(pushIconRes)
           .setContentTitle(title)
           .setContentText(caller)
+          .setColor(ContextCompat.getColor(applicationContext, pushIconColorRes))
           .setPriority(NotificationCompat.PRIORITY_HIGH)
           .setCategory(NotificationCompat.CATEGORY_CALL) // Show main activity on lock screen or when tapping on notification
           .setFullScreenIntent(fullScreenPendingIntent, true)
@@ -687,6 +692,7 @@ class FCMService : FirebaseMessagingService() {
 
     val localIcon = pushSharedPref.getString(PushConstants.ICON, null)
     val localIconColor = pushSharedPref.getString(PushConstants.ICON_COLOR, null)
+
     val soundOption = pushSharedPref.getBoolean(PushConstants.SOUND, true)
     val vibrateOption = pushSharedPref.getBoolean(PushConstants.VIBRATE, true)
 
@@ -770,6 +776,15 @@ class FCMService : FirebaseMessagingService() {
      * Notification count
      */
     setVisibility(extras, mBuilder)
+
+    val pushIconColorRes = ResourcesMapper.getColor(applicationContext,
+        ResourcesKeys.RES_COLOR_PUSH_ICON)
+    val pushIconRes = ResourcesMapper.getDrawable(applicationContext,
+        ResourcesKeys.RES_DRAWABLE_PUSHICON)
+
+    mBuilder
+        .setSmallIcon(pushIconRes)
+        .setColor(ContextCompat.getColor(applicationContext, pushIconColorRes))
 
     /*
      * Notification add actions

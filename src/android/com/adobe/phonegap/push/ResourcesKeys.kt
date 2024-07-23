@@ -32,4 +32,5 @@ object ResourcesKeys {
     const val RES_STR_INCOMING_CALL_UNLOCK_DEVICE_TEXT = "incoming_call_unlock_device_text"
     const val RES_COLOR_ACCEPT_BTN = "accept_btn_color"
     const val RES_COLOR_DECLINE_BTN = "decline_btn_color"
+    const val RES_COLOR_PUSH_ICON = "push_icon_color"
 }
