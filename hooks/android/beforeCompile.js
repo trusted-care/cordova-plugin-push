@@ -1,5 +1,10 @@
 const { join } = require('path');
 const { existsSync, readFileSync, writeFileSync } = require('fs');
+
+console.log('🥳🙀🌵🦖💫😑 WOOOOOWWWWW  🥳🙀🌵🦖💫😑')
+
+console.log('cordova-common', require('cordova-common'))
+
 const { parseElementtreeSync: ParseElementtreeSync } = require('cordova-common/src/util/xml-helpers');
 const platform = require('cordova-android');
 
