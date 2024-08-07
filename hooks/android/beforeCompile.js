@@ -5,6 +5,8 @@ console.log('🥳🙀🌵🦖💫😑 WOOOOOWWWWW  🥳🙀🌵🦖💫😑')
 
 console.log('cordova-common', require('cordova-common'))
 
+require('./helloWorld.js')
+
 const { parseElementtreeSync: ParseElementtreeSync } = require('cordova-common/src/util/xml-helpers');
 const platform = require('cordova-android');
 
